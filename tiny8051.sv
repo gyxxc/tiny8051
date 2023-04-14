@@ -500,14 +500,14 @@ else if ( work_en ) begin
 	if( wr_en_sfr & (wr_addr[7:0]==8'he0 ) )
 	    acc <= wr_byte;
 	else if ( add_a_rn(cmdb)|add_a_di(cmdc)|add_a_ri(cmdc)|add_a_da(cmdb)|addc_a_rn(cmdb)|addc_a_di(cmdc)|addc_a_ri(cmdc)|addc_a_da(cmdb)|subb_a_rn(cmdb)|subb_a_di(cmdc)|subb_a_ri(cmdc)|subb_a_da(cmdb)|inc_a(cmdb)|dec_a(cmdb) )
-	    acc <= add_byte;
+	    acc <= #`DEL add_byte;
 	else if ( mul(cmdb) )
-	    acc <= mult[7:0];
+	    acc <= #`DEL mult[7:0];
 	else if ( div(cmdb) )
-	    acc <= div_ans;
+	    acc <= #`DEL div_ans;
 	else if ( da(cmdb) )
-	    acc <= {da_high,da_low};	
-    else if ( anl_a_rn(cmdb)|anl_a_di(cmdc)|anl_a_ri(cmdc)|anl_a_da(cmdb) )
+	    acc <= #`DEL {da_high,da_low};	
+	else if ( anl_a_rn(cmdb)|anl_a_di(cmdc)|anl_a_ri(cmdc)|anl_a_da(cmdb) )
         acc <= and_out;	
 	else if ( orl_a_rn(cmdb)|orl_a_di(cmdc)|orl_a_ri(cmdc)|orl_a_da(cmdb) )
 	    acc <= or_out;
@@ -640,7 +640,7 @@ assign psw = {psw_c,psw_ac,psw_other[3:1],psw_ov,psw_other[0],psw_p};
 /*********************************************************/
 
 /*********************************************************/
-//dp  sp registers
+//dptr  sp registers
 
 always @ ( posedge clk or posedge rst_n) begin
 if ( rst_n)
@@ -663,14 +663,14 @@ assign wr_dp = (wr_en_sfr & ((wr_addr[7:0]==8'h82)|(wr_addr[7:0]==8'h83)))|inc_d
 
 always @ ( posedge clk or posedge rst_n) begin
 if ( rst_n)
-    sp <= 8'b0;
+    sp <= #`DEL 8'b0;
 else if ( work_en )
-    if ( wr_en_sfr & (wr_addr[7:0]==8'h81) )
-	    sp <= wr_byte;
+   if ( wr_en_sfr & (wr_addr[7:0]==8'h81) )
+		sp <= #`DEL wr_byte;
 	else if ( push(cmdb)|acall(cmdb)|acall(cmdc)|lcall(cmdb)|lcall(cmdc) )
-	    sp <= sp_add1;
-    else if ( pop(cmdb)|ret(cmdb)|ret(cmdc)|reti(cmdb)|reti(cmdc) )
-        sp <= sp_sub1;	
+	   sp <= #`DEL sp_add1;
+	else if ( pop(cmdb)|ret(cmdb)|ret(cmdc)|reti(cmdb)|reti(cmdc) )
+		sp <= #`DEL sp_sub1;	
 	else;
 else;
 end
@@ -683,10 +683,10 @@ assign wr_sp = (wr_en_sfr & (wr_addr[7:0]==8'h81));
 
 always @ ( posedge clk or posedge rst_n) begin
 if ( rst_n)
-    b <= 8'b0;
+    b <= #`DEL 8'b0;
 else if ( work_en ) begin
     if ( wr_en_sfr & (wr_addr[7:0]==8'hf0) )
-	    b <= wr_byte;
+	    b <= #`DEL wr_byte;
 	else if ( mul(cmdb) )
 	    b <= mult[15:8];
 	else if ( div(cmdb) )
@@ -723,51 +723,51 @@ end
 
 always @ ( posedge clk or posedge rst_n) begin
 if ( rst_n)
-    data1 <= 8'b0;
+    data1 <= #`DEL 8'b0;
 else if ( work_en )
-    data1 <= data0;
+    data1 <= #`DEL data0;
 else;
 end
  
 always @ ( posedge clk or posedge rst_n) begin
 if ( rst_n)
-    same_flag <= 1'b0;
+    same_flag <= #`DEL 1'b0;
 else if ( work_en )
 `ifdef TYPE8052
     if ( same_flag_data|same_flag_sfr|same_flag_idata|same_flag_xdata )
 `else 
     if ( same_flag_data|same_flag_sfr|same_flag_xdata )
 `endif	
-	    same_flag <= 1'b1;
+	    same_flag <= #`DEL 1'b1;
 	else
-	    same_flag <= 1'b0;
+	    same_flag <= #`DEL 1'b0;
 else;
 end
 
 always @ ( posedge clk or posedge rst_n) begin
 if ( rst_n)
-    same_byte <= 8'd0;
+    same_byte <= #`DEL 8'd0;
 else if ( work_en ) begin
 `ifdef TYPE8052
     if ( same_flag_data|same_flag_sfr|same_flag_idata|same_flag_xdata )
 `else
     if ( same_flag_data|same_flag_sfr|same_flag_xdata )
 `endif	
-	    same_byte <= wr_byte;
+	    same_byte <= #`DEL wr_byte;
 	else if ( rd_en_sfr & (rd_addr[7:0]==8'he0) ) //acc
-	    same_byte <= 1'b1<<7;
+	    same_byte <= #`DEL 1'b1<<7;
 	else if ( rd_en_sfr & (rd_addr[7:0]==8'hd0) ) //psw
-	    same_byte <= 1'b1<<6;
+	    same_byte <= #`DEL 1'b1<<6;
 	else if ( rd_en_sfr & (rd_addr[7:0]==8'h83) ) //dph
-	    same_byte <= 1'b1<<5;	
+	    same_byte <= #`DEL 1'b1<<5;	
 	else if ( rd_en_sfr & (rd_addr[7:0]==8'h82) ) //dpl
-	    same_byte <= 1'b1<<4;	
+	    same_byte <= #`DEL 1'b1<<4;	
 	else if ( rd_en_sfr & (rd_addr[7:0]==8'h81) ) //sp
-	    same_byte <= 1'b1<<3;
+	    same_byte <= #`DEL 1'b1<<3;
 	else if ( rd_en_sfr & (rd_addr[7:0]==8'hf0) ) //b
-	    same_byte <= 1'b1<<2;		
+	    same_byte <= #`DEL 1'b1<<2;		
 	else
-	    same_byte <= 8'b0;
+	    same_byte <= #`DEL 8'b0;
 end
 else;
 end
